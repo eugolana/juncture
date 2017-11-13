@@ -171,6 +171,7 @@ function clearFields(_editableElements) {
 
 function saveSnapshot() {
 	makeFieldsUneditable(editableElements);
+	turnOffAllContentEditable(editableElements);
 	removeSaveButton();
 	var f = document.documentElement.outerHTML
 	// find it we have injected scrpt
