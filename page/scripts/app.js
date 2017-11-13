@@ -1,6 +1,6 @@
 var ipfsUrl = "http://127.0.0.1:8080/ipfs/";
 var emptyDir = "QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn";
-var	editableElements = ['main','title', 'childA', 'childB'];
+var	editableElements = ['content','title', 'childA', 'childB'];
 var sel = "";
 // sel (this pages hash) and j (th contract instance) are in global scope
 var j;
@@ -12,21 +12,24 @@ window.onload = function() {
 	// check if we are in edit mode.
 	if (qs && qs['edit']) {
 		// if so add edit buttons
-		addEditButtons(editableElements);
-		clearFields(editableElements)
+		// addEditButtons(editableElements);
+		makeFieldsEditable(editableElements);
+		clearFields(editableElements);
 		addSaveButton();
+		addEditModeHide();
 	}
 	// init web3
 
     var Juncture = web3.eth.contract(abi);
 	j = Juncture.at(contractAddress);
-	console.log(j)
+	console.log("sucessfully made contract instance");
+	console.log(j);
 
 	var getSelf = new Promise( (resolve, reject) => {
 	  if (parent && parent != "0x") {
 	    j.getchild(parent, child, function(err, res) {
 	      if (err) {
-	      	console.log("error gtting child")
+	      	console.log("error getting child")
 	      	console.log(err)
 	        reject(err)
 	      } else {
@@ -59,42 +62,75 @@ window.onload = function() {
 	  })
     // edit page title with 'title' element
     document.getElementById('title').onchange = function(e) {
-    	console.log('title canges')
     	document.title = this.innerText + ' - Juncture';
     }
 
-    // enter view mode if 'space' is pressed
+}
+
+
+function makeFieldsEditable(_editableElements){
+	for (var i = 0; i < _editableElements.length; i++) {
+		let el = document.getElementById(_editableElements[i]);
+		el.classList.add('editable');
+		el.onmouseenter = function(event) {
+			this.contentEditable = 'true';
+		}
+		el.onfocus = el.onmouseenter;
+		el.onmouseleave = function(event) {
+			this.contentEditable = 'false';
+			this.onchange()
+		}
+		el.onblur = el.onmouseleave;
+	}
+}
+
+function makeFieldsUneditable(_editableElements){
+	for (var i = 0; i < _editableElements.length; i++) {
+		let el = document.getElementById(_editableElements[i]);
+		el.classList.remove('editable');
+		el.onmouseenter = function(event) {
+			// 
+		}
+		el.onfocus = el.onmouseenter;
+		el.onmouseleave = el.onmouseenter;
+		el.onblur = el.onmouseenter;
+	}
+}
+
+function addEditModeHide() {
+	    // enter view mode if 'space' is pressed
     document.addEventListener('keydown', (event) => {
     	const keyName = event.key;
     	if (! editMode) {
     		return;
     	}
     	editMode = false;
-    	// console.log("key: " + keyName)
     	for (var i=0; i < editableElements.length; i++) {
     		if (document.getElementById(editableElements[i]).contentEditable == 'true') {
     			return
     		}
     	}
   		if (keyName == ' ') {
-  			removeEditButtons(editableElements);
+  			// removeEditButtons(editableElements);
+  			makeFieldsUneditable(editableElements);
+  			removeSaveButton();
+
   		}
 	});
     document.addEventListener('keyup', (event) => {
     	const keyName = event.key;
     	editMode = true;
     	for (var i=0; i < editableElements.length; i++) {
+    		// ignore key hit if we are actually editing a field
     		if (document.getElementById(editableElements[i]).contentEditable == 'true') {
-    			console.log('editable element: ' + editableElements[i])
     			return
     		}
     	}
   		if (keyName == ' ') {
-  			addEditButtons(editableElements);
-  			addSaveButton();
+  			makeFieldsEditable(editableElements);
+			addSaveButton();
   		}
 	});
-
 }
 
 function addEditButtons(_editableElements) {
@@ -114,11 +150,13 @@ function addEditButton(id) {
 	}
 	input.value = "edit " + id;
 	parent.insertBefore(input, el.nextSibling);
+	// calling this every time is overkill but it only adds the 'edtable' class once per element, so its fine
+	el.classList.add('editable')
 }
 
 
 function addSaveButton() {
-	let page = document.getElementById('page');
+	let page = document.getElementsByTagName('main')[0];
 	let input = document.createElement('input');
 	input.type = 'button';
 	input.id = "save";
@@ -132,12 +170,19 @@ function addSaveButton() {
 	page.appendChild(input);
 }
 
+function removeSaveButton() {
+	document.getElementById('save').remove();
+}
+
 function removeEditButtons(_editableElements){
 	for (var i = 0; i < _editableElements.length; i++) {
 		document.getElementById("edit_" + _editableElements[i]).remove();
-		document.getElementById(_editableElements[i]).contentEditable = 'false';
+		let el = document.getElementById(_editableElements[i])
+		el.contentEditable = 'false';
+		el.classList.remove('editable')
 	}
 	document.getElementById('save').remove()
+
 }
 
 function clearFields(_editableElements) {
@@ -148,7 +193,8 @@ function clearFields(_editableElements) {
 
 
 function saveSnapshot() {
-	removeEditButtons(editableElements);
+	makeFieldsUneditable(editableElements);
+	removeSaveButton();
 	var f = document.documentElement.outerHTML
 	// find it we have injected scrpt
 	// for example metamask
@@ -168,7 +214,7 @@ function saveSnapshot() {
 	let childEnd = childStart + f.slice(childStart).search(';')
 	f = f.slice(0,childStart) + "var child = " + qs['child'] + f.slice(childEnd);	
 
-	addEditButtons(editableElements);
+	makeFieldsEditable(editableElements);
 	addSaveButton();
 	return f;
 }
@@ -202,7 +248,6 @@ function upload(f, cb) {
 
 
 function getMyChild(j, parent, childno, id) {
-  console.log("in get my child")
   j.getchild(parent, childno, function(err, res) {
     var el = document.getElementById(id);
     if (err) {
@@ -219,6 +264,7 @@ function getMyChild(j, parent, childno, id) {
 
 function addPage(j, hash, parent, child) {
 	j.addPage( hash, parent, child, function(err, res){
+		// leave these logs for now for debugging
 		if (err) {
 			console.log("addPage errored")
 			console.log(err)

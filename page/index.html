@@ -12,19 +12,27 @@
 		</script>
 		<script type="text/javascript" src="scripts/app.js"></script>
 		<style type="text/css">
-		#page {
+		main {
 			width: 60%;
 			margin-left: auto;
 			margin-right: auto;
 		}
 
-		#main {
+		article {
 			width: 60%;
 			margin-left: auto;
 			margin-right: auto;
 			display: block;
 			min-height: 1em;
 			text-align: center;
+		}
+
+		.editable {
+			min-height: 1em;
+			min-width: 50px;
+			background-color: #DDDDDD;
+			border-bottom: 1px solid #222222;
+			cursor: text;
 		}
 
 		.optionLink {
@@ -45,17 +53,17 @@
 		</style>
 	</head>
 	<body>
-		<div id="page">
+		<main>
 			<header><h3 id="title">waking up</h3></header>
 			<img >
-			<main id="main">
+			<article id="content">
 				<p>You wake to the sound of traffic and birdsong<p>
-			</main>
+			</article>
 			<div id="choices">
 				<a class="optionLink" href="" id="childA">open your eyes</a>
 				<a class="optionLink" href="" id="childB">go back to sleep</a><br>
 			</div>
-		</div>
+		</main>
 	</body>
 
 </html>
