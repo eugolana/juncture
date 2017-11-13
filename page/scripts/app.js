@@ -6,6 +6,7 @@ var	editableElements = ['content','title', 'childA', 'childB'];
 
 // get this page hash from url
 var sel = location.pathname.split('ipfs/')[1] || 'offchain'
+sel = sel.split('/')[0]
 // sel (this pages hash) and j (th contract instance) are in global scope
 
 var j;
@@ -171,13 +172,21 @@ function saveSnapshot() {
 }
 
 function upload(f, cb) {
-	fetch(ipfsUrl + hashFolder + "index.html", {
-		method: 'PUT',
-		body: f,
+	// remove index.html frmo current directory (this is all we ar replacing by default)
+	// this returns the hash of the directory minus index.html
+	fetch(ipfsUrl + sel + "/index.html", {
+		method: 'DELETE',
 	}).then(function(response) {
-		var hash = response.headers.get('Ipfs-Hash')
-		console.log(hash)
-		cb(hash)
+		// add 'f' (our new index.html) to the returned directory
+		let hash = response.headers.get('Ipfs-Hash');
+		fetch(ipfsUrl + hash + "/index.html", {
+			method: 'PUT',
+			body: f,
+		}).then(function(response) {
+			var hash = response.headers.get('Ipfs-Hash')
+			console.log(hash)
+			cb(hash)
+		})
 	})
 }
 
