@@ -16,7 +16,7 @@ window.onload = function() {
 		makeFieldsEditable(editableElements);
 		clearFields(editableElements);
 		addSaveButton();
-		addEditModeHide();
+		editModeKeyEvents();
 	}
 	// init web3
 
@@ -71,16 +71,27 @@ window.onload = function() {
 function makeFieldsEditable(_editableElements){
 	for (var i = 0; i < _editableElements.length; i++) {
 		let el = document.getElementById(_editableElements[i]);
+		if (!el.onchange) {
+			el.onchange = function(){}
+		}
 		el.classList.add('editable');
-		el.onmouseenter = function(event) {
-			this.contentEditable = 'true';
-		}
-		el.onfocus = el.onmouseenter;
-		el.onmouseleave = function(event) {
-			this.contentEditable = 'false';
-			this.onchange()
-		}
-		el.onblur = el.onmouseleave;
+		document.onmousedown = function(event) {
+			turnOffAllContentEditable(_editableElements);
+			if (event.target.classList.contains('editable')) {
+				event.target.contentEditable = 'true';
+			}
+			if (event.target.parentElement.classList.contains('editable')) {
+				event.target.parentElement.contentEditable = 'true';
+			}
+		} 
+	}
+}
+
+function turnOffAllContentEditable(_editableElements) {
+	console.log('turning off content editable')
+	for (var i = 0; i < _editableElements.length; i++) {
+		document.getElementById(_editableElements[i]).contentEditable = 'false';
+		document.getElementById(_editableElements[i]).onchange();
 	}
 }
 
@@ -97,7 +108,7 @@ function makeFieldsUneditable(_editableElements){
 	}
 }
 
-function addEditModeHide() {
+function editModeKeyEvents() {
 	    // enter view mode if 'space' is pressed
     document.addEventListener('keydown', (event) => {
     	const keyName = event.key;
@@ -111,7 +122,6 @@ function addEditModeHide() {
     		}
     	}
   		if (keyName == ' ') {
-  			// removeEditButtons(editableElements);
   			makeFieldsUneditable(editableElements);
   			removeSaveButton();
 
@@ -133,28 +143,6 @@ function addEditModeHide() {
 	});
 }
 
-function addEditButtons(_editableElements) {
-	for (var i = 0; i < _editableElements.length; i++) {
-		addEditButton(_editableElements[i]);
-	}
-}
-
-function addEditButton(id) {
-	let el = document.getElementById(id);
-	let parent = el.parentElement;
-	let input = document.createElement('input');
-	input.type = 'button';
-	input.id = "edit_" + id;
-	input.onclick = function(event) {
-		toggleEditable(id, event);
-	}
-	input.value = "edit " + id;
-	parent.insertBefore(input, el.nextSibling);
-	// calling this every time is overkill but it only adds the 'edtable' class once per element, so its fine
-	el.classList.add('editable')
-}
-
-
 function addSaveButton() {
 	let page = document.getElementsByTagName('main')[0];
 	let input = document.createElement('input');
@@ -172,17 +160,6 @@ function addSaveButton() {
 
 function removeSaveButton() {
 	document.getElementById('save').remove();
-}
-
-function removeEditButtons(_editableElements){
-	for (var i = 0; i < _editableElements.length; i++) {
-		document.getElementById("edit_" + _editableElements[i]).remove();
-		let el = document.getElementById(_editableElements[i])
-		el.contentEditable = 'false';
-		el.classList.remove('editable')
-	}
-	document.getElementById('save').remove()
-
 }
 
 function clearFields(_editableElements) {
@@ -217,22 +194,6 @@ function saveSnapshot() {
 	makeFieldsEditable(editableElements);
 	addSaveButton();
 	return f;
-}
-
-
-function toggleEditable(id, event) {
-	let element = document.getElementById(id);
-	if (element.contentEditable == 'true') {
-		element.contentEditable = 'false';
-		event.target.value = 'edit ' + id;
-		// broadcast event
-		if (element.onchange) {
-			element.onchange();
-		}
-	} else {
-		element.contentEditable = 'true';
-		event.target.value = 'done editing ' + id;	
-	}
 }
 
 function upload(f, cb) {

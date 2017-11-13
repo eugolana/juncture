@@ -4,18 +4,47 @@
 		<script type="text/javascript" src="scripts/web3.min.js"></script>
 		<script type="text/javascript">
 			// js folder address
-			var hashFolder = "QmTnkLh5oqjCxGAUvDrxu5b4JRi58znMs9sC33ZwTFWwhv/"
-			var parent = "";
+			var hashFolder = "QmZNU6MNwZwuXreRrFkkqpMjtJ315hSMYWDmduNS4eNV59/"
+			// set fo an empty string for origin/unlinked page
+			// set to parent address to explicitly grab parent
+			// pick any other string (ie. 'offchain') for offchain testing
+			var parent = " ";
 			var child = 0;
-			var contractAddress = "0x73ebf4b1b4a2033136b22fe8385fb15862257c7d"
+			var contractAddress = "0xbb5dffc264b71a8a7aac15e3aae77acd23f0ec6c"
 			var abi = [{"constant":false,"inputs":[{"name":"_pageAddress","type":"bytes"},{"name":"_parentAddress","type":"bytes"},{"name":"child","type":"uint8"}],"name":"addPage","outputs":[{"name":"","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"creator","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_pageAddress","type":"bytes"}],"name":"getPage","outputs":[{"name":"","type":"address"},{"name":"","type":"bytes"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_startNode","type":"bytes"}],"name":"init","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"n","type":"uint256"}],"name":"getPageAtIndex","outputs":[{"name":"pageAddress","type":"bytes"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_childAddress","type":"bytes"}],"name":"getParent","outputs":[{"name":"","type":"bytes"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"startNode","outputs":[{"name":"","type":"bytes"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getDeposit","outputs":[{"name":"_deposit","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"pageList","outputs":[{"name":"","type":"bytes"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"deposit","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_parentAddress","type":"bytes"},{"name":"child","type":"uint256"}],"name":"getchild","outputs":[{"name":"err","type":"bool"},{"name":"childAddress","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"_deposit","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"message","type":"string"}],"name":"LogEverything","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"message","type":"string"}],"name":"LogShitGoneWrong","type":"event"}]
 		</script>
 		<script type="text/javascript" src="scripts/app.js"></script>
 		<style type="text/css">
+		body {
+			font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+			/*font-family: Futura, ‘Century Gothic’, AppleGothic, sans-serif*/
+		}
+
 		main {
 			width: 60%;
 			margin-left: auto;
 			margin-right: auto;
+			background-color: #EEEEEE;
+			color: #222222;
+			border: 2px solid #AAAAAA;
+			border-radius: 2px;
+			padding: 10px;
+			box-shadow: 0 0 2px 2px #BBBBBB;
+			padding-bottom: 20px;
+		}
+
+		header {
+			text-align: center;
+			display: block;
+		}
+
+		#title {
+			max-width: 80%;
+			min-width: 20%;
+			width: auto;
+			margin-left: auto;
+			margin-right: auto;
+
 		}
 
 		article {
@@ -25,31 +54,69 @@
 			display: block;
 			min-height: 1em;
 			text-align: center;
+			overflow: hide;
 		}
 
-		.editable {
-			min-height: 1em;
-			min-width: 50px;
-			background-color: #DDDDDD;
-			border-bottom: 1px solid #222222;
-			cursor: text;
-		}
 
 		.optionLink {
 			display: inline-block;
-			width: 20%;
+			width: 47%;
+			text-align: center;
+			color: #444444;
+			font-weight: bolder;
+		}
+
+		.optionLink:hover {
+			color: #000000;
 		}
 		#choices {
-			width: auto;
+			margin-top: 30px;
+			width: 80%;
 			margin-left: auto;
 			margin-right: auto;
 		}
 
-		[contenteditable="true"] {
-			min-height: 1em;
-			background-color: #DDDDDD;
-			border: 1px solid #222222;
+		.editable {
+			min-height: 1.5em;
+			min-width: 50px;
+			background-color: #EEEEEE;
+			border: 2px dotted #CCCCCC;
+			border-radius: 3px;
+			cursor: text;
+			padding-top: 5px;
 		}
+
+		.editable:hover, .editable:focus {
+			border: 2px solid #CCCCCC;
+			outline: none;
+			/*border: none;*/
+		}
+		[contenteditable="true"] {
+			background-color: #DDDDDD;
+		}
+
+		#save {
+			display: block;
+			margin-top: 20px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		input[type=button] {
+		    color:#444444;
+		    font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+		    font-weight: bolder;
+		    background-color: #DDDDDD;
+		    /* ... other rules ... */
+		    cursor:pointer;
+		    border-radius: 3px;
+		    border: 2px solid #CCCCCC;
+		}
+
+input[type=button]:hover {
+    background-color: #CCCCCC;
+    border: 2px solid #BBBBBB;
+}
 		</style>
 	</head>
 	<body>
