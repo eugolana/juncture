@@ -1,8 +1,13 @@
 var ipfsUrl = "http://127.0.0.1:8080/ipfs/";
+
+
 var emptyDir = "QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn";
 var	editableElements = ['content','title', 'childA', 'childB'];
-var sel = "";
+
+// get this page hash from url
+var sel = location.pathname.split('ipfs/')[1] || 'offchain'
 // sel (this pages hash) and j (th contract instance) are in global scope
+
 var j;
 var editMode = true;
 
@@ -25,42 +30,10 @@ window.onload = function() {
 	console.log("sucessfully made contract instance");
 	console.log(j);
 
-	var getSelf = new Promise( (resolve, reject) => {
-	  if (parent && parent != "0x") {
-	    j.getchild(parent, child, function(err, res) {
-	      if (err) {
-	      	console.log("error getting child")
-	      	console.log(err)
-	        reject(err)
-	      } else {
-	        if (res[0] && res[1] != "0x") {
-	          sel = res[1];
-	        } else {
-	          console.log("someting wrong getting sel")
-	        }
-	        resolve()
-	      }
-	    })
-	  } else {
-	    // if it doesnt have a parent then ssume it is the origin
-	    j.startNode(function(err, res) {
-	      if (err) {
-	        console.log('error getting startNode')
-	        console.log(err)
-	        reject(err)
-	      } else {
-	        sel = res;
-	        resolve()
-	      }
-	    })
-	  }
-	})
 
-    getSelf.then(function() {
-	    getMyChild(j, sel, 0, 'childA');
-	    getMyChild(j, sel, 1, 'childB');
-	  })
-    // edit page title with 'title' element
+    getMyChild(j, sel, 0, 'childA');
+    getMyChild(j, sel, 1, 'childB');
+	// edit page title with 'title' element
     document.getElementById('title').onchange = function(e) {
     	document.title = this.innerText + ' - Juncture';
     }
