@@ -85,6 +85,11 @@ article {
 	margin-right: auto;
 }
 
+#editCssButton {
+	margin-left: 0;
+	margin-right: 0;
+}
+
 input[type=button] {
     color:#444444;
     font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;

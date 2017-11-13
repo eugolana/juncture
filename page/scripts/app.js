@@ -10,7 +10,12 @@ sel = sel.split('/')[0]
 // sel (this pages hash) and j (th contract instance) are in global scope
 
 var j;
+
 var editMode = true;
+var cssChanges = false;
+var newCSSName;
+var newCSSText;
+var oldCSSName;
 
 var qs = parseQuery(window.location.search)
 
@@ -21,6 +26,7 @@ window.onload = function() {
 		// addEditButtons(editableElements);
 		makeFieldsEditable(editableElements);
 		clearFields(editableElements);
+		addCssUpload();
 		addSaveButton();
 		editModeKeyEvents();
 	}
@@ -80,7 +86,6 @@ function makeFieldsUneditable(_editableElements){
 }
 
 function turnOffAllContentEditable(_editableElements) {
-	console.log('turning off content editable')
 	for (var i = 0; i < _editableElements.length; i++) {
 		document.getElementById(_editableElements[i]).contentEditable = 'false';
 		document.getElementById(_editableElements[i]).onchange();
@@ -103,6 +108,7 @@ function editModeKeyEvents() {
   		if (keyName == ' ') {
   			makeFieldsUneditable(editableElements);
   			removeSaveButton();
+  			removeCssEdit();
 
   		}
 	});
@@ -137,8 +143,48 @@ function addSaveButton() {
 	page.appendChild(input);
 }
 
+function addCssUpload() {
+	let page = document.getElementsByTagName('main')[0];
+	let input = document.createElement('input');
+	input.type = 'file';
+	input.id = "cssEdit";
+
+	let label = document.createElement('label');
+	label.id = 'editCssButton';
+	label.setAttribute('for', 'cssEdit');
+	label.innerText = 'upload css';
+	input.onchange = function(event) {
+
+		let file = event.target.files[0];
+		newCSSName = file.name
+		let dataURLReader = new FileReader();
+		let textReader = new FileReader();
+		dataURLReader.addEventListener('load', function() {
+			// need this so we can remove it frm directory later
+			oldCSSName = document.getElementsByTagName('link')[1].href.split('/').reverse()[0];
+			document.getElementsByTagName('link')[1].href = dataURLReader.result;
+		})
+		dataURLReader.readAsDataURL(file);
+		textReader.addEventListener('load', function() {
+			newCSSText = textReader.result;
+		})
+		textReader.readAsText(file);
+
+		cssChanges = true;
+
+	}
+	page.appendChild(label)
+	input.style.display = 'none';
+	page.appendChild(input);
+}
+
 function removeSaveButton() {
 	document.getElementById('save').remove();
+}
+
+function removeCssEdit() {
+	document.getElementById('cssEdit').remove();
+	document.getElementById('editCssButton').remove();
 }
 
 function clearFields(_editableElements) {
@@ -152,6 +198,7 @@ function saveSnapshot() {
 	makeFieldsUneditable(editableElements);
 	turnOffAllContentEditable(editableElements);
 	removeSaveButton();
+	removeCssEdit();
 	var f = document.documentElement.outerHTML
 	// find it we have injected scrpt
 	// for example metamask
@@ -166,6 +213,13 @@ function saveSnapshot() {
 	let parentEnd = parentStart + f.slice( parentStart).search(';')
 	f = f.slice(0,parentStart) + "var parent = '" + sel + "'" + f.slice(parentEnd);
 
+	// replace css href=data ith style/filename.css
+	let cssHrefStart = f.search('href="data:');
+	if (cssHrefStart >= 0) {
+		let cssHrefEnd = f.slice(cssHrefStart).search(">") + cssHrefStart;
+		f = f.slice(0, cssHrefStart) + 'href="styles/' + newCSSName + '"' + f.slice(cssHrefEnd)
+	}
+
 	// replace 'var child'
 	let childStart = f.search("var child")
 	let childEnd = childStart + f.slice(childStart).search(';')
@@ -179,6 +233,8 @@ function saveSnapshot() {
 function upload(f, cb) {
 	// remove index.html frmo current directory (this is all we ar replacing by default)
 	// this returns the hash of the directory minus index.html
+
+	// TODO this is a mess.. misses the point of promises.. need to refactor
 	fetch(ipfsUrl + sel + "/index.html", {
 		method: 'DELETE',
 	}).then(function(response) {
@@ -189,8 +245,26 @@ function upload(f, cb) {
 			body: f,
 		}).then(function(response) {
 			var hash = response.headers.get('Ipfs-Hash')
-			console.log(hash)
-			cb(hash)
+			if (cssChanges) {
+				fetch(ipfsUrl + hash + "/styles/" + newCSSName, {
+				method: 'PUT',
+				body: newCSSText,
+				}).then( function(response) {
+					hash = response.headers.get('Ipfs-Hash');
+					fetch(ipfsUrl + hash + "/styles/" + oldCSSName, {
+						method: 'DELETE',
+					}).then(function(response) {
+						// add new CSS to folder before uploading
+						hash = response.headers.get('Ipfs-Hash');
+						console.log("added page:" + hash)
+						cb(hash)
+					})
+				})
+			} else {
+				// no new css. Just call cb
+				console.log("added page: " + hash)
+				cb(hash)
+			} 
 		})
 	})
 }
