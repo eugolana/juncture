@@ -227,6 +227,7 @@ function saveSnapshot() {
 
 	makeFieldsEditable(editableElements);
 	addSaveButton();
+	addCssUpload();
 	return f;
 }
 
