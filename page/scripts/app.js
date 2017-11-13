@@ -31,10 +31,12 @@ window.onload = function() {
 	console.log("sucessfully made contract instance");
 	console.log(j);
 
-
+	// Load child addresses if they exist
+	// otherwise will make edit page link
     getMyChild(j, sel, 0, 'childA');
     getMyChild(j, sel, 1, 'childB');
-	// edit page title with 'title' element
+
+	// update page title with 'title' element
     document.getElementById('title').onchange = function(e) {
     	document.title = this.innerText + ' - Juncture';
     }
@@ -43,33 +45,28 @@ window.onload = function() {
 
 
 function makeFieldsEditable(_editableElements){
+	// enters edit mode (doesn't make individual elements 'contentEditable')
 	for (var i = 0; i < _editableElements.length; i++) {
 		let el = document.getElementById(_editableElements[i]);
 		if (!el.onchange) {
 			el.onchange = function(){}
 		}
 		el.classList.add('editable');
-		document.onmousedown = function(event) {
-			turnOffAllContentEditable(_editableElements);
-			if (event.target.classList.contains('editable')) {
-				event.target.contentEditable = 'true';
-			}
-			if (event.target.parentElement.classList.contains('editable')) {
-				event.target.parentElement.contentEditable = 'true';
-			}
-		} 
+	}
+	document.onmousedown = function(event) {
+		turnOffAllContentEditable(_editableElements);
+		if (event.target.classList.contains('editable')) {
+			event.target.contentEditable = 'true';
+		}
+		if (event.target.parentElement.classList.contains('editable')) {
+			event.target.parentElement.contentEditable = 'true';
+		}
 	}
 }
 
-function turnOffAllContentEditable(_editableElements) {
-	console.log('turning off content editable')
-	for (var i = 0; i < _editableElements.length; i++) {
-		document.getElementById(_editableElements[i]).contentEditable = 'false';
-		document.getElementById(_editableElements[i]).onchange();
-	}
-}
 
 function makeFieldsUneditable(_editableElements){
+	// hides 'editmode' t allow pag preview on spacebar press
 	for (var i = 0; i < _editableElements.length; i++) {
 		let el = document.getElementById(_editableElements[i]);
 		el.classList.remove('editable');
@@ -79,6 +76,14 @@ function makeFieldsUneditable(_editableElements){
 		el.onfocus = el.onmouseenter;
 		el.onmouseleave = el.onmouseenter;
 		el.onblur = el.onmouseenter;
+	}
+}
+
+function turnOffAllContentEditable(_editableElements) {
+	console.log('turning off content editable')
+	for (var i = 0; i < _editableElements.length; i++) {
+		document.getElementById(_editableElements[i]).contentEditable = 'false';
+		document.getElementById(_editableElements[i]).onchange();
 	}
 }
 
@@ -138,7 +143,7 @@ function removeSaveButton() {
 
 function clearFields(_editableElements) {
 	for (var i = 0; i < _editableElements.length; i++) {
-		document.getElementById(_editableElements[i]).innerText = "";
+		document.getElementById(_editableElements[i]).innerText = "(" + _editableElements[i] + ")";
 	}
 }
 
