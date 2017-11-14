@@ -243,7 +243,6 @@ function initNavBar() {
 		a.innerText = sel;
 		document.getElementById('nav_pageAddress').appendChild(a)	
 	}
-	document.getElementById('nav_pageAddress').innerText = sel;
 	if (parent) {
 		let a = document.createElement('a');
 		a.href = ipfsURL + parent;
@@ -254,6 +253,13 @@ function initNavBar() {
 	}
 }
 
+function purgeNavBar() {
+	var navInfo = document.getElementsByClassName('nav_info');
+	for (var i = 0; i < navInfo.length; i++) {
+		navInfo[i].getElementsByClassName('value')[0].innerHTML = '';
+	}
+}
+
 // Save page functions
 
 function saveSnapshot() {
@@ -261,6 +267,7 @@ function saveSnapshot() {
 	// from the raw html of the page, and returns the cleansed html for
 	// uploading
 	removeEditElements(editableElements)
+	purgeNavBar();
 
 	var f = document.documentElement.outerHTML
 	// find if we have injected scrpt
@@ -289,6 +296,7 @@ function saveSnapshot() {
 	}
 	// add the edit things back
 	addEditElements(editableElements)
+	initNavBar();
 	return f;
 }
 
