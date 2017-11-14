@@ -22,7 +22,6 @@ contract Juncture {
     
     modifier containsDeposit() {
         if (msg.value < deposit) {
-            LogEverything("deposit too low");
             revert();
         } else {
             _;
@@ -56,13 +55,9 @@ contract Juncture {
     function addPage(string _pageAddress, string _parentAddress, uint8 child) 
     public 
     payable // this bastard right here
+    containsDeposit
     returns (uint) {
-        LogEverything("Made it past modifier");
         
-        if (msg.value < deposit) {
-            LogEverything("deposit too low");
-            return 0;
-        }
         // Check parent exists
         var parent = pages[_parentAddress];
         bytes memory bytesPageParent = bytes(parent.pageAddress);
@@ -108,12 +103,6 @@ contract Juncture {
         return n;
     }
     
-    function getPage(string _pageAddress) public view returns (address, string) {
-        var page = pages[_pageAddress];
-        return (page.author, page.pageAddress);
-        
-    }
-    
     function getPageAtIndex(uint n) public view returns ( string pageAddress) {
         return  pages[pageList[n]].pageAddress;
     }
@@ -135,10 +124,6 @@ contract Juncture {
     
     function getParent(string _childAddress) public view returns (string) {
         return pages[_childAddress].parentAddress;
-    }
-    
-    function getDeposit() public view returns ( uint _deposit ){
-        return deposit;
     }
     
 }
