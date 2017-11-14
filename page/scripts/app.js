@@ -229,9 +229,29 @@ function removeEditMessage() {
 // Dashboard UI stuff
 
 function initNavBar() {
-	document.getElementById('nav_contractAddress').innerText = contractAddress;
+	if (contractAddress == 'offchain') {
+		document.getElementById('nav_contractAddress').innerText = offchain;
+	} else {
+		let a = document.createElement('a');
+		a.href = "https://ropsten.etherscan.io/address/" + contractAddress;
+		a.innerText = contractAddress;
+		document.getElementById('nav_contractAddress').appendChild(a)
+	}
+	if (sel) {
+		let a = document.createElement('a');
+		a.href = ipfsURL + sel;
+		a.innerText = sel;
+		document.getElementById('nav_pageAddress').appendChild(a)	
+	}
 	document.getElementById('nav_pageAddress').innerText = sel;
-	document.getElementById('nav_parentAddress').innerText = parent || 'orphan';
+	if (parent) {
+		let a = document.createElement('a');
+		a.href = ipfsURL + parent;
+		a.innerText = parent;
+		document.getElementById('nav_parentAddress').appendChild(a)
+	} else {
+		document.getElementById('nav_parentAddress').innerText = 'orphan';
+	}
 }
 
 // Save page functions

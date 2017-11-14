@@ -16,11 +16,11 @@ nav {
 	transition: height 0.5s;
 	padding-left: 20px;
 	padding-right: 20px;
+	color: #222222;
 }
 
 nav:hover {
 	height: 50px;
-
 }
 
 .nav_info {
@@ -44,4 +44,14 @@ nav:hover {
 
 .onlyEdit {
 	display: none;
+}
+
+
+.nav_info a {
+	color: #222222;
+	text-decoration: none;
+}
+
+.nav_info a:hover {
+	text-decoration: underline;
 }
