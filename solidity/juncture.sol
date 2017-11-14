@@ -27,8 +27,8 @@ contract Juncture {
             _;
         }
     }
-    event LogEverything(string message, uint n);
-    event LogShitGoneWrong(string message);
+    event LogNewPage(string pageAddress, uint n);
+    event LogError(string message);
     
     function Juncture( uint _deposit) public {
         creator = msg.sender;
@@ -37,8 +37,10 @@ contract Juncture {
     }
     
     function init(string _startNode) public {
+        // This can be called multiple times for now... handy for testing..
+        // Should have 'onceOnly' modifier for release
         if ( msg.sender != creator) {
-            LogShitGoneWrong("only creator can initialise");
+            LogError("only creator can initialise");
         } else {
             startNode = _startNode;
             pages[startNode] = Page({
@@ -63,7 +65,7 @@ contract Juncture {
         uint n;
         bytes memory bytesPageParent = bytes(parent.pageAddress);
         if ( bytesPageParent.length == 0) {
-            LogShitGoneWrong("parent doesn't exist");
+            LogError("parent doesn't exist");
             // return 0 for error
             return 0;
         }
@@ -78,7 +80,7 @@ contract Juncture {
         // to revent accidenta double)
         bytes memory bytesPage = bytes(pages[_pageAddress].pageAddress);
         if (bytesPage.length != 0) {
-            LogShitGoneWrong("that hash aleady exists");
+            LogError("that hash aleady exists");
             return 0;
         }
         
@@ -86,7 +88,7 @@ contract Juncture {
         // 0: childA, 1: childB, other=freepage
         if (child == 0) {
             if ( parent.childA != 0) {
-                LogShitGoneWrong("childA already exists ");
+                LogError("childA already exists ");
                 return 0;
             }
             n = pageList.push(_pageAddress);
@@ -99,13 +101,13 @@ contract Juncture {
                 childB: 0 
             });
             // return total number of pages
-            LogEverything('added childA ', n);
+            LogNewPage(_pageAddress, n);
             return n;
             
         }
         if (child == 1) {
             if ( parent.childB != 0) {
-                LogShitGoneWrong("childB already exists");
+                LogError("childB already exists");
                 return 0;
             }
              n = pageList.push(_pageAddress);
@@ -117,7 +119,7 @@ contract Juncture {
                 childA: 0, 
                 childB: 0 
             });
-            LogEverything('added childB ', n);
+            LogNewPage(_pageAddress, n);
             return n;
         }
         // add 'struct' to pages
