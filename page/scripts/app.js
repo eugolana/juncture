@@ -1,4 +1,4 @@
-var ipfsURL = "http://127.0.0.1:8080/ipfs/";
+var ipfsURL = window.location.protocol + '//' + window.location.host + '/ipfs/';
 
 
 var emptyDir = "QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn";
@@ -303,6 +303,10 @@ function upload(f, cb) {
 					})
 				})
 			} else {
+				if (!hash) {
+					console.log('whoops, something went wrong! failed to add page')
+					return
+				}
 				// no new css. Just call cb
 				console.log("added page: " + hash)
 				cb(hash)
