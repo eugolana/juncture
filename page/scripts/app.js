@@ -251,6 +251,12 @@ function initNavBar() {
 	} else {
 		document.getElementById('nav_parentAddress').innerText = 'orphan';
 	}
+	// get deposit
+	j.deposit(function(err, res) {
+		if (err) {console.log('deposit function went wrong... contract not initialised??');return}
+		document.getElementById('nav_contractDeposit').innerText = res.toNumber();
+
+	})
 }
 
 function purgeNavBar() {
@@ -360,15 +366,21 @@ function getMyChild(j, parent, childno, id) {
 }
 
 function addPage(j, hash, parent, child) {
-	j.addPage( hash, parent, child, function(err, res){
+	document.getElementById('editMessage').innerText = "Adding new page. address: " + hash
+	j.addPage( hash, parent, child, function(err, tHash){
 		// leave these logs for now for debugging
 		if (err) {
 			console.log("addPage errored")
 			console.log(err)
 		} else {
-			console.log("addPage message sent!")
-			console.log("transcation hash:")
-			console.log(res)
+			e = j.LogNewPage();
+			e.watch(function(err, res){
+				if (res.transactionHash == tHash) {
+					document.getElementById('editMessage').innerText = "Page successfully added!"
+					e.stopWatching();
+				}
+			})
+			console.log(tHash)
 		}
 	})
 }
