@@ -1,6 +1,7 @@
 body {
 	font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
 	/*font-family: Futura, ‘Century Gothic’, AppleGothic, sans-serif*/
+	font-size: 80%;
 }
 
 main {
@@ -83,17 +84,6 @@ article {
 	background-color: #DDDDDD;
 }
 
-#save {
-	display: block;
-	margin-top: 20px;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-#editCssButton {
-	margin-left: 0;
-	margin-right: 0;
-}
 
 input[type=button] {
     color:#444444;
@@ -125,3 +115,47 @@ input[type=button]:hover {
 	text-align: center;
 
 }
+
+#endBits {
+	display: block;
+	width: 60%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#editCSSButton {
+	display: block;
+	width: 30%;
+	margin-top: 20px;
+	margin-left: auto;
+	margin-right: auto;
+	cursor: pointer;
+	text-align: center;
+}
+
+#editCSSButton:hover {
+	text-decoration: underline;
+	font-weight: bolder;
+}
+
+ #save {
+	display: block;
+	margin-top: 20px;
+	margin-left: auto;
+	margin-right: auto;
+	cursor: pointer;
+	/*text-decoration: underline;*/
+	width: 30%;
+	text-align: center;
+	background-color: #EEEEEE;
+	border: 2px dotted #CCCCCC;
+	border-radius: 3px;
+	height: 1.5em;
+}
+
+#save:hover {
+	/*font-weight: bolder;*/
+	border: 2px solid #BBBBBB;
+	background-color: #DDDDDD;
+}
+

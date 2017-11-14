@@ -145,22 +145,21 @@ function editModeKeyEvents() {
 }
 
 function addSaveButton() {
-	let page = document.getElementsByTagName('main')[0];
-	let input = document.createElement('input');
-	input.type = 'button';
-	input.id = "save";
-	input.value = "save to ipfs";
-	input.onclick = function(event) {
+	let endBits = document.getElementById('endBits');
+	let saveButton = document.createElement('div');
+	saveButton.id = "save";
+		saveButton.innerText = "Save";
+	saveButton.onclick = function(event) {
 		let file = saveSnapshot();
 		upload(file, function(hash) {
 			addPage(j, hash, sel, qs['child'])
 		});
 	}
-	page.appendChild(input);
+	endBits.appendChild(saveButton);
 }
 
 function addEditCSS() {
-	let page = document.getElementsByTagName('main')[0];
+	let endBits = document.getElementById('endBits');
 	let input = document.createElement('input');
 	input.type = 'file';
 	input.id = "editCSS";
@@ -193,9 +192,9 @@ function addEditCSS() {
 
 		cssChanged = true;
 	}
-	page.appendChild(label)
+	endBits.appendChild(label)
 	input.style.display = 'none';
-	page.appendChild(input);
+	endBits.appendChild(input);
 }
 
 function removeSaveButton() {
