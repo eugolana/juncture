@@ -22,16 +22,12 @@ var qs = parseQuery(window.location.search)
 window.onload = function() {
 	// check if we are in edit mode.
 	if (qs && qs['edit']) {
-		// if so add edit buttons
-		// addEditButtons(editableElements);
-		makeFieldsEditable(editableElements);
+		// if so add edit buttons etc
 		clearFields(editableElements);
-		addEditCSS();
-		addSaveButton();
-		editModeKeyEvents();
+		addEditElements(editableElements);
 	}
-	// init web3
 
+	// init web3
     var Juncture = web3.eth.contract(abi);
 	j = Juncture.at(contractAddress);
 	console.log("sucessfully made contract instance");
@@ -50,6 +46,25 @@ window.onload = function() {
     initNavBar();
 
 }
+
+
+// Editor UI stuff
+function addEditElements(_editableElements){
+	makeFieldsEditable(_editableElements);
+	addEditCSS();
+	addSaveButton();
+	editModeKeyEvents();
+	addEditMessage();
+}
+
+function removeEditElements(_editableElements){
+	makeFieldsUneditable(_editableElements);
+	turnOffAllContentEditable(_editableElements);
+	removeSaveButton();
+	removeEditCSS();
+	removeEditMessage();	
+}
+
 
 
 function makeFieldsEditable(_editableElements){
@@ -97,35 +112,34 @@ function turnOffAllContentEditable(_editableElements) {
 function editModeKeyEvents() {
 	    // enter view mode if 'space' is pressed
     document.addEventListener('keydown', (event) => {
-    	const keyName = event.key;
-    	if (! editMode) {
-    		return;
+    	var keyName = event.key;
+    	if (keyName == ' '){
+	    	if (! editMode) {
+	    		return;
+	    	}
+	    	editMode = false;
+	    	for (var i=0; i < editableElements.length; i++) {
+	    		if (document.getElementById(editableElements[i]).contentEditable == 'true') {
+	    			return
+	    		}
+	    	}
+  			removeEditElements(editableElements);
+    		
     	}
-    	editMode = false;
-    	for (var i=0; i < editableElements.length; i++) {
-    		if (document.getElementById(editableElements[i]).contentEditable == 'true') {
-    			return
-    		}
-    	}
-  		if (keyName == ' ') {
-  			makeFieldsUneditable(editableElements);
-  			removeSaveButton();
-  			removeEditCSS();
-  		}
 	});
     document.addEventListener('keyup', (event) => {
-    	const keyName = event.key;
-    	editMode = true;
-    	for (var i=0; i < editableElements.length; i++) {
-    		// ignore key hit if we are actually editing a field
-    		if (document.getElementById(editableElements[i]).contentEditable == 'true') {
-    			return
-    		}
-    	}
+    	var keyName = event.key;
   		if (keyName == ' ') {
-  			makeFieldsEditable(editableElements);
-			addSaveButton();
-			addEditCSS();
+  			if (editMode == true) {
+    			return;
+    		}
+    		editMode = true;
+   	    	for (var i=0; i < editableElements.length; i++) {
+	    		if (document.getElementById(editableElements[i]).contentEditable == 'true') {
+	    			return
+	    		}
+	    	}
+			addEditElements(editableElements);
   		}
 	});
 }
@@ -199,25 +213,52 @@ function clearFields(_editableElements) {
 	}
 }
 
+function addEditMessage() {
+	let div = document.createElement('div');
+	div.id = 'editMessage';
+	div.innerText = 'You are in edit mode. Press the <space> bar to preview.'
+	document.getElementsByTagName("main")[0].appendChild(div);
+}
+
+function removeEditMessage() {
+	let div = document.getElementById('editMessage')
+	div.remove();
+}
+
+// Dashboard UI stuff
+
+function initNavBar() {
+	document.getElementById('nav_contractAddress').innerText = contractAddress;
+	document.getElementById('nav_pageAddress').innerText = sel;
+	document.getElementById('nav_parentAddress').innerText = parent || 'orphan';
+}
+
+// Save page functions
 
 function saveSnapshot() {
-	makeFieldsUneditable(editableElements);
-	turnOffAllContentEditable(editableElements);
-	removeSaveButton();
-	removeEditCSS();
+	// This removes all traces of editor, and a few other unique elements, 
+	// from the raw html of the page, and returns the cleansed html for
+	// uploading
+	removeEditElements(editableElements)
+
 	var f = document.documentElement.outerHTML
-	// find it we have injected scrpt
-	// for example metamask
+	// find if we have injected scrpt
+	// (specifically, remove) metamask inpage.js or it will propagate like a cancer
 	let injectedJSStart = f.search("<script>")
 	if (injectedJSStart >= 0) {
-		// strip out injected js (or it will be injected again and again etc...)
 		injectedJSEnd = f.search("</script>")
 		f = f.slice(0,injectedJSStart) + f.slice(injectedJSEnd + 9);
 	}
+
 	// replace 'var parent'
 	let parentStart = f.search("var parent")
 	let parentEnd = parentStart + f.slice( parentStart).search(';')
 	f = f.slice(0,parentStart) + "var parent = '" + sel + "'" + f.slice(parentEnd);
+
+	// replace 'var child'
+	let childStart = f.search("var child")
+	let childEnd = childStart + f.slice(childStart).search(';')
+	f = f.slice(0,childStart) + "var child = " + qs['child'] + f.slice(childEnd);	
 
 	// replace css href=data ith style/filename.css
 	let hrefStart = f.search('href="data:');
@@ -225,15 +266,8 @@ function saveSnapshot() {
 		let hrefEnd = f.slice(hrefStart).search(">") + hrefStart;
 		f = f.slice(0, hrefStart) + 'href="styles/' + newCSSName + '"' + f.slice(hrefEnd)
 	}
-
-	// replace 'var child'
-	let childStart = f.search("var child")
-	let childEnd = childStart + f.slice(childStart).search(';')
-	f = f.slice(0,childStart) + "var child = " + qs['child'] + f.slice(childEnd);	
-
-	makeFieldsEditable(editableElements);
-	addSaveButton();
-	addEditCSS();
+	// add the edit things back
+	addEditElements(editableElements)
 	return f;
 }
 
@@ -314,11 +348,4 @@ function parseQuery(queryString) {
         query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
     }
     return query;
-}
-
-
-function initNavBar() {
-	document.getElementById('nav_contractAddress').innerText = contractAddress;
-	document.getElementById('nav_pageAddress').innerText = sel;
-	document.getElementById('nav_parentAddress').innerText = parent || 'orphan';
 }
