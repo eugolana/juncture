@@ -215,9 +215,11 @@ function clearFields(_editableElements) {
 
 function addEditMessage() {
 	let div = document.createElement('div');
+	let header = document.getElementsByTagName('header')[0];
+	let main = document.getElementsByTagName('main')[0];
 	div.id = 'editMessage';
 	div.innerText = 'You are in edit mode. Press the <space> bar to preview.'
-	document.getElementsByTagName("main")[0].appendChild(div);
+	main.insertBefore(div, header)
 }
 
 function removeEditMessage() {
