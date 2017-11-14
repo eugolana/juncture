@@ -3,7 +3,7 @@ pragma solidity ^0.4.17;
 contract Juncture {
     // To be set by creator
     address public creator;
-    bytes public startNode;
+    string public startNode;
     uint public deposit;
     
     // Page State
@@ -11,14 +11,14 @@ contract Juncture {
     
     struct Page {
         address author;
-        bytes pageAddress;
-        bytes parentAddress;
-        bytes childA;
-        bytes childB;
+        string pageAddress;
+        string parentAddress;
+        string childA;
+        string childB;
     }
     
     mapping (string => Page) pages;
-    bytes[] public pageList;
+    string[] public pageList;
     
     modifier containsDeposit() {
         if (msg.value < deposit) {
@@ -37,12 +37,12 @@ contract Juncture {
         
     }
     
-    function init(bytes _startNode) public {
+    function init(string _startNode) public {
         if ( msg.sender != creator) {
             LogShitGoneWrong("only creator can initialise");
         } else {
             startNode = _startNode;
-            pages[string(startNode)] = Page({
+            pages[startNode] = Page({
                 author: msg.sender,
                 pageAddress: startNode,
                 parentAddress: "",
@@ -53,7 +53,7 @@ contract Juncture {
         }
     }
     
-    function addPage(bytes _pageAddress, bytes _parentAddress, uint8 child) 
+    function addPage(string _pageAddress, string _parentAddress, uint8 child) 
     public 
     payable // this bastard right here
     returns (uint) {
@@ -64,7 +64,7 @@ contract Juncture {
             return 0;
         }
         // Check parent exists
-        var parent = pages[string(_parentAddress)];
+        var parent = pages[_parentAddress];
         bytes memory bytesPageParent = bytes(parent.pageAddress);
         if ( bytesPageParent.length == 0) {
             LogShitGoneWrong("parent doesn't exist");
@@ -73,14 +73,14 @@ contract Juncture {
         }
         // send dolla to parent and parents parent
         parent.author.transfer(msg.value/2);
-        var grandparent = pages[string(parent.parentAddress)];
-        if (grandparent.parentAddress.length != 0) {
+        var grandparent = pages[parent.parentAddress];
+        if (bytes(grandparent.parentAddress).length != 0) {
             grandparent.author.transfer(msg.value/4);
         }
         
         // Check this page doesnt already exist (probably not necessary.. except
         // to revent accidenta double)
-        bytes memory bytesPage = bytes(pages[string(_pageAddress)].pageAddress);
+        bytes memory bytesPage = bytes(pages[_pageAddress].pageAddress);
         if (bytesPage.length != 0) {
             LogShitGoneWrong("that hash aleady exists");
             return 0;
@@ -89,53 +89,52 @@ contract Juncture {
         // check which child we are adding
         // 0: childA, 1: childB, other=freepage
         if (child == 0) {
-            if ( pages[string(_parentAddress)].childA.length != 0) {
+            if ( bytes(pages[_parentAddress].childA).length != 0) {
                 LogShitGoneWrong("childA already exists");
                 return 0;
             }
-            pages[string(_parentAddress)].childA = _pageAddress;
+            pages[_parentAddress].childA = _pageAddress;
         }
         if (child == 1) {
-            if ( pages[string(_parentAddress)].childB.length != 0) {
+            if ( bytes(pages[_parentAddress].childB).length != 0) {
                 LogShitGoneWrong("childB already exists");
                 return 0;
             }
-            pages[string(_parentAddress)].childB = _pageAddress;
+            pages[_parentAddress].childB = _pageAddress;
         }
         // return total number of pages
-        pages[string(_pageAddress)] = Page({ author: msg.sender, pageAddress: _pageAddress, parentAddress: _parentAddress, childA: "", childB: "" });
+        pages[_pageAddress] = Page({ author: msg.sender, pageAddress: _pageAddress, parentAddress: _parentAddress, childA: "", childB: "" });
         var n = pageList.push(_pageAddress);
         return n;
     }
     
-    function getPage(bytes _pageAddress) public view returns (address, bytes) {
-        var page = pages[string(_pageAddress)];
+    function getPage(string _pageAddress) public view returns (address, string) {
+        var page = pages[_pageAddress];
         return (page.author, page.pageAddress);
         
     }
     
-    function getPageAtIndex(uint n) public view returns ( bytes pageAddress) {
-        return  pages[string(pageList[n])].pageAddress;
-        // return msg.sender;
+    function getPageAtIndex(uint n) public view returns ( string pageAddress) {
+        return  pages[pageList[n]].pageAddress;
     }
     
-    function getchild(bytes _parentAddress, uint child) public view returns (bool err, string childAddress) {
-        var parentAddress = string(_parentAddress);
+    function getchild(string _parentAddress, uint child) public view returns (bool err, string childAddress) {
+        var parentAddress = _parentAddress;
         if (child == 0) {
-            if (pages[parentAddress].childA.length > 0) {
-                return (true, string(pages[parentAddress].childA));
+            if (bytes(pages[parentAddress].childA).length > 0) {
+                return (true, pages[parentAddress].childA);
             }
         }
         if (child == 1) {
-            if (pages[parentAddress].childA.length > 0) {
-                return (true, string(pages[parentAddress].childB));
+            if (bytes(pages[parentAddress].childA).length > 0) {
+                return (true, pages[parentAddress].childB);
             }
         }
         return (false, "");
     }
     
-    function getParent(bytes _childAddress) public view returns (bytes ) {
-        return pages[string(_childAddress)].parentAddress;
+    function getParent(string _childAddress) public view returns (string) {
+        return pages[_childAddress].parentAddress;
     }
     
     function getDeposit() public view returns ( uint _deposit ){
