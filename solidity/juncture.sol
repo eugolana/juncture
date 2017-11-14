@@ -1,4 +1,4 @@
-pragma solidity ^0.4.7;
+pragma solidity ^0.4.17;
 
 contract Juncture {
     // To be set by creator
