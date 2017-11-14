@@ -13,8 +13,8 @@ contract Juncture {
         address author;
         string pageAddress;
         string parentAddress;
-        string childA;
-        string childB;
+        uint childA;
+        uint childB;
     }
     
     mapping (string => Page) pages;
@@ -27,7 +27,7 @@ contract Juncture {
             _;
         }
     }
-    event LogEverything(string message);
+    event LogEverything(string message, uint n);
     event LogShitGoneWrong(string message);
     
     function Juncture( uint _deposit) public {
@@ -45,8 +45,8 @@ contract Juncture {
                 author: msg.sender,
                 pageAddress: startNode,
                 parentAddress: "",
-                childA: "",
-                childB: ""
+                childA: 0,
+                childB: 0
             });
         pageList.push(startNode);
         }
@@ -60,6 +60,7 @@ contract Juncture {
         
         // Check parent exists
         var parent = pages[_parentAddress];
+        uint n;
         bytes memory bytesPageParent = bytes(parent.pageAddress);
         if ( bytesPageParent.length == 0) {
             LogShitGoneWrong("parent doesn't exist");
@@ -84,39 +85,54 @@ contract Juncture {
         // check which child we are adding
         // 0: childA, 1: childB, other=freepage
         if (child == 0) {
-            if ( bytes(pages[_parentAddress].childA).length != 0) {
-                LogShitGoneWrong("childA already exists");
+            if ( parent.childA != 0) {
+                LogShitGoneWrong("childA already exists ");
                 return 0;
             }
-            pages[_parentAddress].childA = _pageAddress;
+            n = pageList.push(_pageAddress);
+            pages[_parentAddress].childA = pageList.length - 1;
+            pages[_pageAddress] = Page({ 
+                author: msg.sender, 
+                pageAddress: _pageAddress, 
+                parentAddress: _parentAddress, 
+                childA: 0, 
+                childB: 0 
+            });
+            // return total number of pages
+            LogEverything('added childA ', n);
+            return n;
+            
         }
         if (child == 1) {
-            if ( bytes(pages[_parentAddress].childB).length != 0) {
+            if ( parent.childB != 0) {
                 LogShitGoneWrong("childB already exists");
                 return 0;
             }
-            pages[_parentAddress].childB = _pageAddress;
+             n = pageList.push(_pageAddress);
+            pages[_parentAddress].childB = pageList.length - 1;
+            pages[_pageAddress] = Page({ 
+                author: msg.sender, 
+                pageAddress: _pageAddress, 
+                parentAddress: _parentAddress, 
+                childA: 0, 
+                childB: 0 
+            });
+            LogEverything('added childB ', n);
+            return n;
         }
-        // return total number of pages
-        pages[_pageAddress] = Page({ author: msg.sender, pageAddress: _pageAddress, parentAddress: _parentAddress, childA: "", childB: "" });
-        var n = pageList.push(_pageAddress);
-        return n;
-    }
-    
-    function getPageAtIndex(uint n) public view returns ( string pageAddress) {
-        return  pages[pageList[n]].pageAddress;
+        // add 'struct' to pages
     }
     
     function getchild(string _parentAddress, uint child) public view returns (bool err, string childAddress) {
-        var parentAddress = _parentAddress;
+        var parent = pages[_parentAddress];
         if (child == 0) {
-            if (bytes(pages[parentAddress].childA).length > 0) {
-                return (true, pages[parentAddress].childA);
+            if (parent.childA != 0) {
+                return (true, pageList[parent.childA]);
             }
         }
         if (child == 1) {
-            if (bytes(pages[parentAddress].childA).length > 0) {
-                return (true, pages[parentAddress].childB);
+            if (parent.childB != 0) {
+                return (true, pageList[parent.childB]);
             }
         }
         return (false, "");
