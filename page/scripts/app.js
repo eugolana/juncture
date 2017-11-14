@@ -366,7 +366,7 @@ function getMyChild(j, parent, childno, id) {
 }
 
 function addPage(j, hash, parent, child) {
-	document.getElementById('editMessage').innerText = "Adding new page. address: " + hash
+	document.getElementById('editMessage').innerText = "Adding new page. address: " + hash + ". Just waiting for confirmation..."
 	j.addPage( hash, parent, child, function(err, tHash){
 		// leave these logs for now for debugging
 		if (err) {
@@ -376,7 +376,11 @@ function addPage(j, hash, parent, child) {
 			e = j.LogNewPage();
 			e.watch(function(err, res){
 				if (res.transactionHash == tHash) {
+					let a = document.createElement('a')
+					a.href = ipfsURL + hash
+					a.innerText = hash
 					document.getElementById('editMessage').innerText = "Page successfully added!"
+					document.getElementById('editMessage').appendChild(a)
 					e.stopWatching();
 				}
 			})
