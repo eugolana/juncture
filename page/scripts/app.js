@@ -47,6 +47,8 @@ window.onload = function() {
     	document.title = this.innerText + ' - Juncture';
     }
 
+    initNavBar();
+
 }
 
 
@@ -312,4 +314,11 @@ function parseQuery(queryString) {
         query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
     }
     return query;
+}
+
+
+function initNavBar() {
+	document.getElementById('nav_contractAddress').innerText = contractAddress;
+	document.getElementById('nav_pageAddress').innerText = sel;
+	document.getElementById('nav_parentAddress').innerText = parent || 'orphan';
 }

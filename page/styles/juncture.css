@@ -1,1 +1,52 @@
-/*This should contain UI/dashboard styling*/
+/*This should contain UI/dashboard styling (ie. <nav> dashboard */
+
+nav {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 5px;
+	overflow: hidden;
+	background-color: #BBBBBB;
+	opacity: 0.85;
+	border-bottom: 1px solid #888888;
+	box-shadow: 5px 0 2px 0 #222222;
+	cursor: pointer;
+	font-family: "Lucida Console", Monaco, monospace;
+	transition: height 0.5s;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+nav:hover {
+	height: 50px;
+
+}
+
+.nav_info {
+	display: inline-block;
+	min-width: 100px;
+	max-width: 50%;
+	margin: 5px;
+	margin-top: 10px;
+	font-size: 80%;
+}
+
+.nav_info .label {
+	font-weight: bolder;
+	display: inline-block;
+}
+
+.nav_info .value {
+	display: inline-block;
+	overflow: wrap;
+}
+
+.onlyEdit {
+	display: none;
+}
+/*.nav_tab {
+	margin-left: auto;
+	margin-right: auto;
+	width: 20%;
+}*/
