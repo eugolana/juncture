@@ -110,7 +110,7 @@ function turnOffAllContentEditable(_editableElements) {
 }
 
 function editModeKeyEvents() {
-	    // enter view mode if 'space' is pressed
+	// enter view mode if 'space' is pressed
     document.addEventListener('keydown', (event) => {
     	var keyName = event.key;
     	if (keyName == ' '){
