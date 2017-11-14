@@ -92,7 +92,7 @@ contract Juncture {
                 return 0;
             }
             n = pageList.push(_pageAddress);
-            pages[_parentAddress].childA = pageList.length - 1;
+            parent.childA = pageList.length - 1;
             pages[_pageAddress] = Page({ 
                 author: msg.sender, 
                 pageAddress: _pageAddress, 
@@ -111,7 +111,7 @@ contract Juncture {
                 return 0;
             }
              n = pageList.push(_pageAddress);
-            pages[_parentAddress].childB = pageList.length - 1;
+            parent.childB = pageList.length - 1;
             pages[_pageAddress] = Page({ 
                 author: msg.sender, 
                 pageAddress: _pageAddress, 
