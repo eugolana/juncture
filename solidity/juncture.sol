@@ -1,4 +1,4 @@
-pragma solidity ^0.4.17;
+pragma solidity ^0.4.18;
 
 contract Juncture {
     // To be set by creator
@@ -142,6 +142,13 @@ contract Juncture {
     
     function getParent(string _childAddress) public view returns (string) {
         return pages[_childAddress].parentAddress;
+    }
+    
+    function pageExists(string _pageAddress) public view returns (bool) {
+        if (bytes(pages[_pageAddress].pageAddress).length != 0) {
+            return true;
+        }
+        return false;
     }
     
 }
