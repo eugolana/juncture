@@ -20,15 +20,15 @@ nav {
 }
 
 nav:hover {
-	height: 100px;
+	height: 60px;
 }
 
 .nav_info {
+	height: 1em;	
 	display: inline-block;
 	min-width: 100px;
-	max-width: 50%;
 	margin: 5px;
-	margin-top: 10px;
+	/*margin-top: 10px;*/
 	font-size: 80%;
 }
 
@@ -54,4 +54,13 @@ nav:hover {
 
 .nav_info a:hover {
 	text-decoration: underline;
+}
+
+#nav_message {
+	display: none;
+	width: 100%;
+	text-align: center;
+	font-size: 120%;
+	font-weight: bolder;
+	margin-top: 20px;
 }
