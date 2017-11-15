@@ -53,8 +53,16 @@ article {
 	padding-right: 5%;
 }
 
+.optionLink.empty {
+	color: #888888;
+}
+
 .optionLink:hover {
 	color: #000000;
+}
+
+.optionLink.empty:hover {
+	color: #444444;
 }
 
 #choices {

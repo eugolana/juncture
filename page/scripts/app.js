@@ -396,6 +396,7 @@ function getMyChild(j, parent, childno, id) {
       if (res[0] && res[1]) {
         el.href = ipfsURL +res[1];
       } else {
+      	el.classList.add('empty')
         el.href = "?edit=true&child=" + childno;
       }
     }
@@ -406,7 +407,7 @@ function addPage(j, hash, parent, child) {
 	let a = document.createElement('a')
 	a.href = ipfsURL + hash;
 	a.innerText = hash;
-	document.getElementById('editMessage').innerText = "Adding new page. address: " + hash + ". Just waiting for confirmation...";
+	document.getElementById('editMessage').innerText = "Adding new page, Just waiting for confirmation... You can visit the page at ";
 	document.getElementById('editMessage').appendChild(a);
 	j.addPage( hash, parent, child, function(err, tHash){
 		// leave these logs for now for debugging
@@ -414,8 +415,8 @@ function addPage(j, hash, parent, child) {
 			console.log("addPage errored");
 			console.log(err);
 		} else {
-			e = j.LogNewPage();
-			e.watch(function(err, res){
+			sucess = j.LogNewPage();
+			success.watch(function(err, res){
 				if (res.transactionHash == tHash) {
 					let a = document.createElement('a');
 					a.href = ipfsURL + hash;
@@ -423,6 +424,16 @@ function addPage(j, hash, parent, child) {
 					document.getElementById('editMessage').innerText = "Page successfully added!";
 					document.getElementById('editMessage').appendChild(a);
 					e.stopWatching();
+				}
+			})
+			error = j.LogError();
+			error.watch(function(err, res){
+				if (res.transactionHash == tHash) {
+
+					doument.getElementById('editMessage').innerText = "something went wrong adding the page! Check the transaction record"
+					let a = document.createElement('a');
+					s.href = "https://ropsten.etherscan.io/transaction/" + tHash;
+
 				}
 			})
 			console.log(tHash)
