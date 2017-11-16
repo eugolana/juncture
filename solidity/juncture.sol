@@ -144,11 +144,19 @@ contract Juncture {
         return pages[_childAddress].parentAddress;
     }
     
+    function getAuthor(string _pageAddress) public view returns (address) {
+        return pages[_pageAddress].author;
+    }
+    
     function pageExists(string _pageAddress) public view returns (bool) {
         if (bytes(pages[_pageAddress].pageAddress).length != 0) {
             return true;
         }
         return false;
+    }
+    
+    function numberOfPages() public view returns (uint) {
+        return pageList.length;
     }
     
 }
