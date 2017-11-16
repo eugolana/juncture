@@ -481,3 +481,28 @@ function parseQuery(queryString) {
     }
     return query;
 }
+
+
+// bonus function
+let allPageHashes = [];
+function getAllPageHashes() {
+	j.numberOfPages(function(err, res) {
+		if (err) {
+			console.log('whoops!')
+			console.log(err)
+		} else {
+			let n = res.toNumber();
+			for (let i = 0; i < n; i++) {
+				j.pageList(i, function(err, res) {
+					allPageHashes.push(res);
+					if (i == n-1) {
+						console.log('copypaste the below into your command line to pin all files')
+						console.log('(thanks for pinning!)')
+						console.log('ipfs pin add ' + allPageHashes.toString().replace(/,/g, ' '))
+					}
+				})
+
+			}
+		}
+	})
+}
