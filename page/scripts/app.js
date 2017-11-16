@@ -54,6 +54,7 @@ function addEditElements(_editableElements){
 	addSaveButton();
 	editModeKeyEvents();
 	addEditMessage();
+
 }
 
 function removeEditElements(_editableElements){
@@ -209,6 +210,8 @@ function clearFields(_editableElements) {
 	for (let i = 0; i < _editableElements.length; i++) {
 		document.getElementById(_editableElements[i]).innerText = "(" + _editableElements[i] + ")";
 	}
+	document.getElementById('childA').classList.remove('empty');
+	document.getElementById('childB').classList.remove('empty');
 }
 
 function addEditMessage() {
@@ -415,7 +418,7 @@ function addPage(j, hash, parent, child) {
 			console.log("addPage errored");
 			console.log(err);
 		} else {
-			sucess = j.LogNewPage();
+			success = j.LogNewPage();
 			success.watch(function(err, res){
 				if (res.transactionHash == tHash) {
 					let a = document.createElement('a');
