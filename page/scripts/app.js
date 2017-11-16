@@ -4,6 +4,8 @@ const ipfsURL = window.location.protocol + '//' + window.location.host + '/ipfs/
 const emptyDir = "QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn";
 const	editableElements = ['content','title', 'childA', 'childB'];
 
+let navMessage;
+
 // get this page hash from url.
 // ( assumes lcoation.pathname is in form /ipfs/<ipfs hash>)/
 const sel = location.pathname.split('/')[2] || 'offchain'
@@ -22,16 +24,34 @@ let oldCSSName;
 const qs = parseQuery(window.location.search)
 
 window.onload = function() {
+	// init web3
+	var Web3 = require('web3');
+
+    if (typeof web3 !== 'undefined') {
+        web3 = new Web3(web3.currentProvider);
+        console.log('web3 initialised');
+    } else {
+        // set the provider you want from Web3.providers
+        console.log('problems with web3 :(');
+        reportError('problems initialising web3');
+    }
+
+    // init contract
+    let Juncture = web3.eth.contract(abi);
+	j = Juncture.at(contractAddress);
+	if (j == undefined) {
+		reportError("contact ailed to initialise :'( ");
+	}
+
+    initNavBar();
+
+
 	// check if we are in edit mode.
 	if (qs && qs['edit']) {
 		// if so add edit buttons etc
 		clearFields(editableElements);
 		addEditElements(editableElements);
 	}
-
-	// init web3
-    let Juncture = web3.eth.contract(abi);
-	j = Juncture.at(contractAddress);
 
 	// Load child addresses if they exist
 	// otherwise will make edit page link
@@ -43,7 +63,6 @@ window.onload = function() {
     	document.title = this.innerText + ' - Juncture';
     }
 
-    initNavBar();
 
 }
 
@@ -233,30 +252,23 @@ function removeEditMessage() {
 
 function initNavBar() {
 	// Check if page is on chain
+		
+
 	j.pageExists(sel, function(err, res) {
 		if (err) {
-			console.log('contract not registered')
+			reportError('something wrong with the contact')
 		} else {
 			if (!res) {
-				let el = document.getElementById('nav_message');
-				el.style.display = 'block'
-				let dashboard = document.getElementById('dashboard')
-				el.innerHTML = 'Page not yet registered.. wait a while and reload :)';
-				dashboard.style['background-color'] = '#BB4444';
-				dashboard.style.height = '60px';
-				let info = document.getElementsByClassName('nav_info')
-				for(let i = 0; i < info.length; i++) {
-					info[i].style.display = 'none'
-				}
-
+				reportError("Page not yet registered.. wait a while and reload :)")
 			}
-
 		}
 
 	})
 
+
+
 	if (contractAddress == 'offchain') {
-		document.getElementById('nav_contractAddress').innerText = 'offchain  (filler to  make it roughly the right length)';
+		document.getElementById('nav_contractAddress').innerText = 'offchain';
 	} else {
 		let a = document.createElement('a');
 		a.href = "https://ropsten.etherscan.io/address/" + contractAddress;
@@ -298,6 +310,20 @@ function initNavBar() {
 		a.innerText = res;
 		document.getElementById('nav_startNode').appendChild(a);
 	})
+}
+
+
+function reportError(message) {
+	let el = document.getElementById('nav_message');
+	el.style.display = 'block'
+	let dashboard = document.getElementById('dashboard')
+	el.innerHTML = message;
+	dashboard.style.height = '60px';
+	dashboard.style.backgroundColor = '#CC6666'
+	let info = document.getElementsByClassName('nav_info')
+	for(let i = 0; i < info.length; i++) {
+		info[i].style.display = 'none'
+	}
 }
 
 function purgeNavBar() {
@@ -395,7 +421,7 @@ function getMyChild(j, parent, childno, id) {
   j.getchild(parent, childno, function(err, res) {
     let el = document.getElementById(id);
     if (err) {
-      el.innerText = err;
+      reportError('something went wrong getting links from blockchain :(')
     } else {
       if (res[0] && res[1]) {
         el.href = ipfsURL +res[1];
@@ -418,6 +444,7 @@ function addPage(j, hash, parent, child) {
 		if (err) {
 			console.log("addPage errored");
 			console.log(err);
+			reportError("something went wrong calling 'addPage'.")
 		} else {
 			success = j.LogNewPage();
 			success.watch(function(err, res){
