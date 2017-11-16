@@ -11,6 +11,7 @@ const sel = location.pathname.split('/')[2] || 'offchain'
 // sel (this pages hash) and j (th contract instance) are in global scope
 
 let j;
+let deposit;
 
 let editMode = true;
 let cssChanged = false;
@@ -276,15 +277,15 @@ function initNavBar() {
 	} else {
 		document.getElementById('nav_parentAddress').innerText = 'orphan (with addd spacing just for testing purposes';
 	}
-	// get deposit
 	j.deposit(function(err, res) {
 		if (err) {
-			console.log('deposit function went wrong... contract not initialised??');
-			return;
+			console.log("there's something wrong with your contract instance");
+		} else {
+			deposit = res.toNumber();
+			document.getElementById('nav_contractDeposit').innerText = deposit;
 		}
-		document.getElementById('nav_contractDeposit').innerText = res.toNumber();
-
 	})
+	// set deposit
 
 	// get startNode
 	j.startNode(function(err, res) {
@@ -412,7 +413,7 @@ function addPage(j, hash, parent, child) {
 	a.innerText = hash;
 	document.getElementById('editMessage').innerText = "Adding new page, Just waiting for confirmation... You can visit the page at ";
 	document.getElementById('editMessage').appendChild(a);
-	j.addPage( hash, parent, child, function(err, tHash){
+	j.addPage(hash, parent, child, {from: web3.eth.accounts[0], value: deposit}, function(err, tHash){
 		// leave these logs for now for debugging
 		if (err) {
 			console.log("addPage errored");
