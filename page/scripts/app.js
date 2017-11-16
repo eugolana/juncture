@@ -287,7 +287,7 @@ function initNavBar() {
 		a.innerText = parent;
 		document.getElementById('nav_parentAddress').appendChild(a)
 	} else {
-		document.getElementById('nav_parentAddress').innerText = 'orphan (with addd spacing just for testing purposes';
+		document.getElementById('nav_parentAddress').innerText = 'orphan/origin';
 	}
 	j.deposit(function(err, res) {
 		if (err) {
@@ -297,9 +297,15 @@ function initNavBar() {
 			document.getElementById('nav_contractDeposit').innerText = deposit;
 		}
 	})
-	// set deposit
+	j.getAuthor(sel, function(err, res) {
+		if (err) {
+			console.log("there's something wrong with your contract instance");
+		} else {
+			author = res;
+			document.getElementById('nav_author').innerText = res;
+		}
+	})
 
-	// get startNode
 	j.startNode(function(err, res) {
 		if (err) {
 			console.log('deposit function went wrong... contract not initialised??');
