@@ -8,7 +8,7 @@
 			// pick any other string (ie. 'offchain') for offchain testing
 			const parent = "";
 			const child = 0;
-			const contractAddress = "0x4b9a1ff361c0e5f0255ef451a1f730bca377b26b"
+			const contractAddress = "0x7d681ccc900133c3ff1e59c6e11ba765a5b6cff7"
 			const abi = [{"constant":true,"inputs":[],"name":"creator","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_pageAddress","type":"string"}],"name":"getAuthor","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_parentAddress","type":"string"},{"name":"child","type":"uint256"}],"name":"getchild","outputs":[{"name":"err","type":"bool"},{"name":"childAddress","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"numberOfPages","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_pageAddress","type":"string"},{"name":"_parentAddress","type":"string"},{"name":"child","type":"uint8"}],"name":"addPage","outputs":[{"name":"","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"startNode","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"pageList","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"deposit","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_pageAddress","type":"string"}],"name":"pageExists","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_childAddress","type":"string"}],"name":"getParent","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_startNode","type":"string"}],"name":"init","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"_deposit","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"pageAddress","type":"string"},{"indexed":false,"name":"n","type":"uint256"}],"name":"LogNewPage","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"message","type":"string"}],"name":"LogError","type":"event"}]
 
 		</script>
@@ -18,6 +18,9 @@
 	</head>
 	<body>
 		<nav id="dashboard">
+			<div class="nav_info">
+				<p class="value" id="nav_sourceCode"><a href="https://github.com/eugolana/Juncture">source code</a></p>
+			</div>
 			<div id="nav_message"></div>
 			<div class="nav_info">
 				<p class="label">Contract Address:</p> 

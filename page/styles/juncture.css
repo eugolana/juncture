@@ -64,3 +64,28 @@ nav:hover {
 	font-weight: bolder;
 	margin-top: 20px;
 }
+
+#alert {
+	position: fixed;
+	display: block;
+	top: 100px;
+	margin-left: 25%;
+	margin-right: 35%;
+	height: 100px;
+	width: 50%;
+	z-index: 1002;
+	text-align: center;
+	background: #BBBBBB;
+	border: 3px dotted #888888;
+	border-radius: 3px;
+}
+
+#close {
+	float: right;
+	padding: 4px;
+	cursor: pointer;
+}
+
+#close:hover {
+	text-decoration: underline;
+}
