@@ -265,6 +265,7 @@ function initNavBar() {
 
 	})
 
+	document.getElementById('nav_pinPages').onclick = getAllPageHashes;
 
 
 	if (contractAddress == 'offchain') {
@@ -301,8 +302,10 @@ function initNavBar() {
 		if (err) {
 			console.log("there's something wrong with your contract instance");
 		} else {
-			author = res;
-			document.getElementById('nav_author').innerText = res;
+			let a = document.createElement('a');
+			a.href = "https://ropsten.etherscan.io/account/" + res;
+			a.innerText = res;
+			document.getElementById('nav_author').appendChild(a);
 		}
 	})
 
@@ -419,6 +422,9 @@ function upload(f, cb) {
 				cb(hash);
 			} 
 		})
+	}).catch( function(err) {
+		console.log(err)
+		reportError("could not add page to IPFS. You must be running your own IPFS node in 'writable' mode for this to work.")
 	})
 }
 
@@ -490,8 +496,8 @@ function parseQuery(queryString) {
 
 
 // bonus function
-let allPageHashes = [];
 function getAllPageHashes() {
+	let allPageHashes = [];
 	j.numberOfPages(function(err, res) {
 		if (err) {
 			console.log('whoops!')
@@ -501,28 +507,34 @@ function getAllPageHashes() {
 			for (let i = 0; i < n; i++) {
 				j.pageList(i, function(err, res) {
 					allPageHashes.push(res);
-					if (i == n-1) {
-						let text = "copypaste the below into your command line to pin all files \n '"
-						text += 'ipfs pin add ' + allPageHashes.toString().replace(/,/g, ' ')
-						text += '\n Thanks for pinning!'
-						let textEl = document.createElement('p')
-						textEl.innerText = text
-						let closeButton = document.createElement('p');
-						closeButton.id = 'close';
-						closeButton.innerText = 'x'
-						closeButton.onclick = function() {
-							document.getElementById('alert').remove();
-						}
-						let div = document.createElement('div')
-						div.id = 'alert'
-						div.appendChild(closeButton)
-						div.appendChild(textEl)
-
-						document.body.appendChild(div)
+					if (allPageHashes.length == n) {
+						openPinPopup(allPageHashes);
 					}
 				})
 
 			}
 		}
 	})
+}
+
+function openPinPopup(pageHashes) {
+	if (document.getElementById('alert')) { return;}
+	let backLayer = document.createElement('div');
+	backLayer.id = 'backLayer';
+	let textEl = document.createElement('p');
+	textEl.innerText = "copypaste the code below into your command line to pin all pages currently on Juncture. ";
+	let codeEl = document.createElement('code');
+	codeEl.innerText = 'ipfs pin add ' + pageHashes.toString().replace(/,/g, ' ');
+	backLayer.onclick = function() {
+		document.getElementById('backLayer').remove();
+		document.getElementById('alert').remove();
+	}
+	let div = document.createElement('div');
+	div.id = 'alert';
+	div.appendChild(textEl);
+	div.appendChild(codeEl);
+	// backLayer.appendChild(div)
+
+	document.body.appendChild(backLayer);
+	document.body.appendChild(div);
 }
