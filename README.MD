@@ -57,4 +57,4 @@ Clicking on a link to a non-existant page will take you into edit mode. This giv
 
 IPFS can be thought of a 'content-addressed' network. This means that rather than etch a file by going to a particular location and hoping it is there, you ask the network for a particular file (via its 'hash') and the network finds someone with a copy of that file hooks you up with it. For the network to function, users ('nodes') must 'pin' files, which basically means to hold on to it for anyone on the network to grab. If nobody else pins files, then this 'decentralised' network, then it could end up completely dependent on me! (not very decentralised)
 
-I hope to write a small script to grab all of the addresses for all Juncture pages, to make it easy for people to help by carrying all the files, but I haven't got round to this yet.. For now you'll have to do it manually through `ipfs pin <Ipfs-Hash>`
+Hover your mouse at the top of a page to open the nav menu, and click 'pin all pages'. This will give you a command which can be copy-pasted into your console to pin all the currently regiterd pages (note, there is no safeguard currently in place. Do so at your own risk!)
