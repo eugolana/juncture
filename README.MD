@@ -26,7 +26,7 @@ Using the built in page-generator, each page inherits markup and  (by default) a
 Eventually, I think there would need to be a mechanism for removing offensive/spam content. My current thought is to allow the owner of a 'parent' page to 'flag' a child that they would like removed (possibly supplying a small deposit). The 'governing committee' account could then decide whether the page meets an explicit and public list of deletion criteria (contains illegal material, is spam/advertising, contains racist/transphobic/homophobic/sexist etc. language, etc). This, however, is a debate to be had in the future if I or anyone else wants to take the concept forwards. For now, the 25% of accumulated RopstenEther just sits there on the contract, and there is no way to delete a page.
 
 ## How to Use 
-As I have mentioned, Juncture is far from a polished product, but I feel like it's come together enough to throw it out there for others to play around with. It is currenty live on the Ropsten Test network, and the startpage can be found at 'https://gateway.ipfs.io/ipfs/QmUn1kuLyQ6XhrGuAQZqARnXubqQeYY5xuDgEkBvgNYhVo/'
+As I have mentioned, Juncture is far from a polished product, but I feel like it's come together enough to throw it out there for others to play around with. It is currenty live on the Ropsten Test network, and the startpage can be found at 'https://ipfs.io/ipfs/QmSGEQHmfCj5x9gWoAEeeUvuCSYdqeAiEkzurKvACCKoU9/'
 
 ### Read only access 
 1. Install metamask plugin and run it on the 'Ropsten' test network
