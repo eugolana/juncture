@@ -40,18 +40,22 @@ contract Juncture {
         // This can be called multiple times for now... handy for testing..
         // Should have 'onceOnly' modifier for release
         if ( msg.sender != creator) {
-            LogError("only creator can initialise");
-        } else {
-            startNode = _startNode;
-            pages[startNode] = Page({
-                author: msg.sender,
-                pageAddress: startNode,
-                parentAddress: "",
-                childA: 0,
-                childB: 0
-            });
-        pageList.push(startNode);
+            LogError("only creator can initialise.");
+            return;
         }
+        if (bytes(startNode).length != 0) {
+            LogError("Juncture instance already initialised.");
+            return;
+        }
+        startNode = _startNode;
+        pages[startNode] = Page({
+            author: msg.sender,
+            pageAddress: startNode,
+            parentAddress: "",
+            childA: 0,
+            childB: 0
+        });
+        pageList.push(startNode);
     }
     
     function addPage(string _pageAddress, string _parentAddress, uint8 child) 
